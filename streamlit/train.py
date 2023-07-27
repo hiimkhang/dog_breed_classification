@@ -18,6 +18,21 @@ def train_step(model: nn.Module,
                optimizer: torch.optim.Optimizer,
                device: torch.device,
                epoch: int) -> tuple[float, float]:
+    """ Performs a single training step through the train loader.
+    i.e. forward pass, backward pass and parameter update.
+
+    Args:
+        model (nn.Module): _model
+        train_loader (DataLoader): _train loader_
+        loss_fn (nn.Module): loss function, e.g. nn.CrossEntropyLoss()
+        optimizer (torch.optim.Optimizer): optimizer, e.g. torch.optim.SGD()
+        device (torch.device): using device
+        epoch (int): current epoch
+
+    Returns:
+        tuple[float, float]: average train loss and train accuracy
+    """
+    
     model.train()
 
     train_loss, train_accuracy = 0., 0.
@@ -52,7 +67,19 @@ def eval_step(model: nn.Module,
               loss_fn: nn.Module,
               device: torch.device,
               epoch: int) -> tuple[float, float]:
+    """ Performs a single testing step through the test loader.
+    i.e. forward pass and compute loss and accuracy.
 
+    Args:
+        model (nn.Module): _model
+        test_loader (DataLoader): _test loader_
+        loss_fn (nn.Module): loss function, e.g. nn.CrossEntropyLoss()
+        device (torch.device): using device
+        epoch (int): current epoch
+
+    Returns:
+        tuple[float, float]: average test loss and test accuracy
+    """
     model.eval()
 
     test_loss, test_accuracy = 0., 0.
@@ -86,7 +113,11 @@ def train_model(model: nn.Module,
                 epochs: int,
                 device: torch.device,
                 results):
+    """ Trains the model for the given number of epochs.
 
+    Returns:
+        dict[str, list]: results of the training and testing process
+    """
     global results_info
     model.to(device)
 
@@ -137,7 +168,24 @@ def train_progress(dataset_path: str,
                    eval_batch_size: int,
                    num_workers: int,
                    num_epochs=5):
+    """ Manage the training process
+    
+    Initializes results dict, loss functions and optimizers,
+    as well as load dataloader.
+    
+    Load checkpoint if continue button is pressed.
+    
+    Perform training and saving models. Then plot the results.
 
+    Args:
+        dataset_path (str): _description_
+        _model_type (str): _description_
+        model_path (str): _description_
+        train_batch_size (int): _description_
+        eval_batch_size (int): _description_
+        num_workers (int): _description_
+        num_epochs (int, optional): _description_. Defaults to 5.
+    """
     global model_type, results_info
 
     results = {'Train loss': [],
@@ -192,6 +240,7 @@ def train_progress(dataset_path: str,
     # results.update(train_result)
     dataset_name = dataset_path.split("/")[-1]
     save_name = f"{model_type}_{dataset_name}"
+    
     # Save the trained model
     if not os.path.exists(saved_models_dir):
         os.makedirs(saved_models_dir, exist_ok=True)
@@ -203,11 +252,14 @@ def train_progress(dataset_path: str,
     streamlit.st.info(
         f"Model saved to {os.path.join(saved_models_dir, save_name)}.pth")
 
+    # Convert results to pandas dataframe, plotting purpose
     pd_result = pd.DataFrame(results, index=range(1, num_epochs+1))
     pd_result.reset_index(inplace=True)
     pd_result.rename(columns={'index': 'Epoch'}, inplace=True)
 
     streamlit.st.table(pd_result)
+    
+    # Remove the progress bar training messages 
     for info in results_info:
         info.empty()
     results_info.clear()
