@@ -43,7 +43,8 @@ def main():
             
             st.success("Training completed.")
         else:
-            st.error("Please input a valid dataset path")
+            st.error(f"Please input a valid dataset path")
+            st.error(f"train and valid folder should exist, e.g. ./dataset/train and ./dataset/valid")
         st.session_state['training_flag'] = 'stop'
     
     if st.session_state['training_flag'] == 'stop' and stop:

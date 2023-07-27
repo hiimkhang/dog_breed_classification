@@ -42,7 +42,32 @@ View or modify the available model architectures in `available_models.txt`.
 
 Run the main script to start training the model and generate loss and accuracy curves.
 
+The default dataset structure is as follows:
 
+```
+dataset
+├── train
+│   ├── class_1
+│   ├── class_2
+...
+│   └── class_n
+└── val
+    ├── class_1
+    ├── class_2
+...
+    └── class_n
+```
+
+But if your dataset is structured differently, for example:
+
+```
+dataset
+├── class_1
+├── class_2
+...
+└── class_n
+```
+In this case, you can use the `--ratio` argument to specify the ratio of training to validation data, and the program will automatically split the data into training and validation sets.
 ### Command-line Arguments
 
 The following command-line arguments are available:
@@ -50,6 +75,7 @@ The following command-line arguments are available:
 - `-a`, `--arch`: Model architecture (default: "resnet50").
 - `-d`, `--dataset`: Path to the dataset (default: "../dog_breed_3").
 - `-w`, `--workers`: Number of workers (default: 4).
+- `--ratio`: Ratio of training to validation data (default: 0.8).
 - `--train_batch`: Batch size for training (default: 8).
 - `--test_batch`: Batch size for testing (default: 8).
 - `--epochs`: Number of epochs for training (default: 10).
@@ -70,7 +96,7 @@ python main.py
 To specify a different model architecture, dataset path, and number of epochs, use the respective arguments:
 
 ```
-python main.py --arch resnet50 --dataset /path/to/dataset --epochs 20
+python main.py --arch resnet50 --dataset ../dog_breed_3 --epochs 20
 ```
 
 To resume training from a checkpoint, use the `-r` flag:
