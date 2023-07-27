@@ -4,8 +4,16 @@ A `streamlit` WebApp and `program` that can load a dog breed dataset, applying t
 
 Coming soon: classify dog breeds from user-supplied images.
 
+## Project Requirements
+
+1. Write a python program using pytorch to classify dog breeds with requirements a, b, c: `./program`
+2. Apply a technique to reduce 80% resnet50 parameter size in 2c, preserving the performance: `./notebook`
+
+UI for the model using Streamlit: `./streamlit`
+
 ## Table of Contents
 - [Dog Breed Classification](#dog-breed-classification)
+  - [Project Requirements](#project-requirements)
   - [Table of Contents](#table-of-contents)
   - [Dataset](#dataset)
   - [Installation](#installation)
