@@ -7,12 +7,17 @@ import model_utils as mu
 from train import train_model
 import os
 
+saved_models_dir = "./saved_models"
+saved_plots_dir = "./plots"
+checkpoint_dir = "./checkpoints"
+default_model = "resnet50"
+default_dataset = "../dog_breed_3"
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description="No.")
     parser.add_argument("-d", "--dataset", type=str,
-                        default='../dog_breed_3', help="Path to the dataset.")
-    parser.add_argument("-a", "--arch", type=str, default="resnet50",
+                        default=default_dataset, help="Path to the dataset.")
+    parser.add_argument("-a", "--arch", type=str, default=default_model,
                         help="Name of the model architecture.")
     parser.add_argument("-r", "--resume", action="store_true",
                         default=False, help="Resume from local checkpoint.")
@@ -20,6 +25,8 @@ def parse_arguments():
                         required=False, help="Path to pre-trained model (if any).")
     parser.add_argument("-w", "--workers", type=int,
                         default=4, help="Number of workers.")
+    parser.add_argument("--ratio", type=float,
+                        default=0.8, help="Train test split ratio.")
     parser.add_argument("--train_batch", type=int, default=8,
                         help="Batch size for training.")
     parser.add_argument("--test_batch", type=int, default=8,
@@ -31,14 +38,12 @@ def parse_arguments():
 
 def main():
     args = parse_arguments()
-    checkpoint_dir = "./checkpoints"
-    saved_models_dir = "./saved_models"
-    saved_plots_dir = "./plots"
-
-    if args.arch == "":
-        args.arch = "resnet50"
-    if args.dataset == "":
-        args.dataset = "../dog_breed_3"
+    
+    # Check if the dataset path is valid
+    if args.dataset != default_dataset:
+        is_valid, args.dataset = mu.check_dataset_path(args.dataset, args.ratio)
+    assert is_valid, "Invalid dataset path!"
+    
     dataset_name = args.dataset.split("/")[-1]
 
     results = {'Train loss': [],
@@ -75,8 +80,8 @@ def main():
                                                   model=model,
                                                   optimizer=optimizer,
                                                   dataset_name=dataset_name)
-    print(args.arch, args.dataset)
     # Training
+    mu.log_message(f"Training {args.arch} on {dataset_name} with {args.epochs} epochs...", is_print=True)
     train_results = train_model(model=model,
                                 model_type=args.arch,
                                 train_dataloader=dataloader['train'],

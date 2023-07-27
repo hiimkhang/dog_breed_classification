@@ -185,7 +185,7 @@ def count_folders(path: str) -> int:
             count += 1
     return count
 
-def split_folders(path: str, train_percentage: float = 0.8) -> None:
+def split_folders(path: str, train_percentage = 0.8) -> None:
     """ Split a folder consists multi classes (subfolders) 
     into train and validation folder with a ratio of train_percentage.
     
@@ -197,10 +197,11 @@ def split_folders(path: str, train_percentage: float = 0.8) -> None:
         path (str): path to folder
         train_percentage (float, optional): train/split ratio. Defaults to 0.8.
     """
-    target_dir = "./data"
-    
+    target_dir = "./dataset"
+    if os.path.exists(target_dir):
+        shutil.rmtree(target_dir)
     train_folder = os.path.join(target_dir, "train")
-    validation_folder = os.path.join(target_dir, "validation")
+    validation_folder = os.path.join(target_dir, "valid")
     
     os.makedirs(train_folder, exist_ok=True)
     os.makedirs(validation_folder, exist_ok=True)
@@ -210,6 +211,7 @@ def split_folders(path: str, train_percentage: float = 0.8) -> None:
         if os.path.isdir(class_folder):
             images = os.listdir(class_folder)
             num_images = len(images)
+            # log_message(f"Class {class_name} has {num_images} images", is_print=True)
             num_train = int(num_images * train_percentage)
             
             random.shuffle(images)
@@ -222,14 +224,17 @@ def split_folders(path: str, train_percentage: float = 0.8) -> None:
                 dest_path = os.path.join(train_folder, class_name, image)
                 os.makedirs(os.path.join(train_folder, class_name), exist_ok=True)
                 shutil.copy(src_path, dest_path)
+                # log_message(f"Train image {image} copied to {dest_path}", is_print=False)
             
             for image in valid_images:
                 src_path = os.path.join(class_folder, image)
                 dest_path = os.path.join(validation_folder, class_name, image)
                 os.makedirs(os.path.join(validation_folder, class_name), exist_ok=True)
                 shutil.copy(src_path, dest_path)
+                # log_message(f"Valid image {image} copied to {dest_path}", is_print=False)
 
-def check_dataset_path(path: str) -> bool:
+
+def check_dataset_path(path: str, train_percentage: float = 0.8) -> bool:
     """
     Function to check if a dataset path exists, and if not, create it.
     
@@ -239,13 +244,15 @@ def check_dataset_path(path: str) -> bool:
         if not os.path.exists(os.path.join(path, 'train')) or not os.path.exists(os.path.join(path, 'valid')):
             # If the data folder contains multiple folders (classes), splitting is required
             if count_folders(path) > 1:
-                log_message('Splitting dataset into train and validation folders into ./data/...')
-                split_folders(path)
-                log_message('Splitting complete! Visit ./data/ to view the split dataset.')
-                return True
+                log_message(f"Splitting dataset into train and validation folders with a ratio of {train_percentage} into ./dataset/...\n"
+                            f"If you want to change the ratio, re-run the program with --ratio <ratio>(float)\n", 
+                            is_print=True)
+                split_folders(path, train_percentage)
+                log_message('Splitting complete! Visit ./dataset/ to view the split dataset.', is_print=True)
+                return True, './dataset'
         elif os.path.exists(os.path.join(path, 'train')) and os.path.exists(os.path.join(path, 'valid')):
-            return True
-    return False
+            return True, path
+    return False, ''
 
 def check_pretrained_model_path(path: str) -> bool:
     """ Check if a pretrained model exists at the given path.
