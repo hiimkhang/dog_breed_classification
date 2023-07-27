@@ -12,6 +12,7 @@ Coming soon: classify dog breeds from user-supplied images.
   - [Usage](#usage)
     - [Command-line Arguments](#command-line-arguments)
   - [Example](#example)
+  - [Demo:](#demo)
 
 ## Dataset
 
@@ -27,7 +28,7 @@ To make it easier to test, I made three subsets from the original dataset:
 ## Installation
 
 1. Clone this repository to your local machine.
-2. The `python_code` folder is for the python program only, he `streamlit` folder is for the streamlit app. Read README.md in those for more information.
+2. This folder is for the python program only, he `streamlit` folder is for the streamlit app.
 3. Install the required dependencies by running:
    
 ```
@@ -37,6 +38,8 @@ pip install -r requirements.txt
 
 ## Usage
 
+View or modify the available model architectures in `available_models.txt`.
+
 Run the main script to start training the model and generate loss and accuracy curves.
 
 
@@ -44,17 +47,44 @@ Run the main script to start training the model and generate loss and accuracy c
 
 The following command-line arguments are available:
 
-- `--arch`: Model architecture (default: "resnet50").
-- `--dataset`: Path to the dataset (default: "../dog_breed_3").
+- `-a`, `--arch`: Model architecture (default: "resnet50").
+- `-d`, `--dataset`: Path to the dataset (default: "../dog_breed_3").
+- `-w`, `--workers`: Number of workers (default: 4).
+- `--train_batch`: Batch size for training (default: 8).
+- `--test_batch`: Batch size for testing (default: 8).
 - `--epochs`: Number of epochs for training (default: 10).
 
 Additional optional arguments:
 
-- `-r`, `--resume_training`: Resume training from a checkpoint (default: False).
-- `-h`, `--help`: Show help message and exit.
+- `-p`, `--pretrained`: Path to pre-trained model (default: None).
+- `-r`, `--resume`: Resume training from a local checkpoint (default: False).
 
 ## Example
 
 To train the model using the default settings, run the following command:
 
+```
+python main.py
+```
 
+To specify a different model architecture, dataset path, and number of epochs, use the respective arguments:
+
+```
+python main.py --arch resnet50 --dataset /path/to/dataset --epochs 20
+```
+
+To resume training from a checkpoint, use the `-r` flag:
+
+```
+python main.py -r
+```
+
+## Demo:
+
+Command-line arguments:
+
+![Demo commands](Demo.png)
+
+ResNet50 on dog_breed_3 dataset:
+
+![ResNet50 on dog_breed_3](./plots/resnet50_small_dataset_accuracy_curve.png)
