@@ -1,6 +1,6 @@
 # Dog Breed Classification
 
-A `streamlit` WebApp and `program` that can load a dog breed dataset, applying transfer learning techniques that allow users to load their pretrained model to train a convolutional neural network to classify dog breeds. 
+A streamlit WebApp that can load a dog breed dataset, applying transfer learning techniques that allow users to load their pretrained model to train a convolutional neural network to classify dog breeds. 
 
 Coming soon: classify dog breeds from user-supplied images.
 
@@ -26,7 +26,7 @@ To make it easier to test, I made three subsets from the original dataset:
 ## Installation
 
 1. Clone this repository to your local machine.
-2. The `python_code` folder is for the python program only, he `streamlit` folder is for the streamlit app. Read `README.md` in those for more information.
+2. This folder is for the streamlit app only, the `program` folder is for another program.
 3. Install the required dependencies by running:
    
 ```
@@ -35,19 +35,27 @@ pip install -r requirements.txt
 
 ## Usage
 
-View the `README.md` in the `program` and `streamlit` folder for more information.
+To run the streamlit on the localhost, simply run:
+
+```
+streamlit run main.py
+```
+
+View or modify the available model architectures in `./models/available_models.txt`.
+
+![Demo1](Demo1.png)
+
+1. Input dataset path
+2. Select model architecture, number of epochs, and batch size.
+3. **The training with pretrain model path only works if the model architecture is the same as the pretrain model architecture.**
+4. Can stop the training and press continue to resume training, the checkpoint will load from a saved checkpoint in the `./checkpoints` folder.
 
 ## Demo:
 
-`program` command-line arguments:
+Training progress:
 
-![program cla](./program/Demo.png)
+![Demo 2](Demo2.png)
 
-Streamlit training progress:
+Plots of loss and accuracy after training:
 
-![Streamlit training progress](./streamlit/Demo2.png)
-
-
-Streamlit plots of loss and accuracy after training:
-
-![Plots](./streamlit/Demo3.png)
+![Plots](Demo3.png)
