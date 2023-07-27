@@ -10,8 +10,16 @@ def get_data_loaders(data_dir: str,
                      train_batch_size=32, 
                      eval_batch_size=64, 
                      num_workers=8) -> tuple[dict, dict]:
-    """
-    Function to get train and validation data loaders
+    """ Function to load the dataset and create data loaders
+
+    Args:
+        data_dir (str): dataset directory
+        train_batch_size (int, optional): train batch size. Defaults to 32.
+        eval_batch_size (int, optional): evaluation batch size. Defaults to 64.
+        num_workers (int, optional): number of workers. Defaults to 8.
+
+    Returns:
+        tuple[dict, dict]: dataloaders and image_datasets
     """
     # Define transforms
     data_transforms = {
@@ -55,10 +63,14 @@ def get_data_loaders(data_dir: str,
     return dataloaders, image_datasets
 
 def get_input_tensor_shape(dataloaders: dict) -> tuple[int, int, int]:
-    """
-    Function to get the shape of the input tensor
-    
-    Example output: input_shape = (3, 224, 224)
+    """ Function to get the shape of the input tensor. Can be use to get
+    the number of channels, height and width of the input tensor.
+
+    Args:
+        dataloaders (dict): dataloaders
+
+    Returns:
+        tuple[int, int, int]: shape of the input tensor (channels, height, width).
     """
     # Get a batch of training data
     inputs, _ = next(iter(dataloaders['train']))

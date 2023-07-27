@@ -17,6 +17,13 @@ warnings.filterwarnings("ignore", category=UserWarning)
 default_checkpoint_dir = "./checkpoints"
 
 def get_available_modeltypes() -> list[str]:
+    """ Get the available model types from the available_models.txt file
+    
+    User can modify the available_models.txt file to add more models
+
+    Returns:
+        list[str]: list of available model types
+    """
     available_models = []
     with open("models/available_models.txt", "r") as f:
         for line in f.readlines():
@@ -30,8 +37,17 @@ def load_model(path: str,
                in_channels: int,
                num_classes: int,
                device: torch.device) -> nn.Module:
-    """
-    Function to load a model from a checkpoint
+    """ Load a model from torchvision.models or given path.
+
+    Args:
+        model_type (str): model architecture name (resnet50, resnet152, efficientnet_b32, ...).
+        in_channels (int): input channels from dataset.
+        num_classes (int): total of dataset classes, map with out_features in the last layer.
+        device (torch.device): device to run the model.
+        path (str, optional): pretrained model path. Defaults to "".
+
+    Returns:
+        nn.Module: model with modified first and last layer.
     """
         
     # If user input model path and, load the state dict 
@@ -49,8 +65,15 @@ def load_model(path: str,
 def modify_layers(model: nn.Module, 
                   in_channels: int,
                   num_classes: int) -> nn.Module:
-    """
-    Function to modify the last layer of a model
+    """ Modify the first and the last layer of the model.
+
+    Args:
+        model (nn.Module): model to modify.
+        in_channels (int): input channels from dataset.
+        num_classes (int): number of classes from dataset.
+
+    Returns:
+        nn.Module: model with modified first and last layer.
     """
     last_layer = None
     first_layer = None
@@ -94,8 +117,17 @@ def save_checkpoint(model: nn.Module,
                     num_epochs: int,
                     result: dict[str, list],
                     folder_path = default_checkpoint_dir) -> None:
-    """
-    Function to save a model checkpoint
+    """ Save a model checkpoint, including epoch, optimizer, model state dict and result.
+
+    Args:
+        model (nn.Module):  model
+        model_type (str):  model architecture name (resnet50, resnet152, efficientnet_b32, ...).
+        optimizer (torch.optim.Optimizer): optimizer
+        epoch (int): continue from this epoch.
+        num_epochs (int): total epochs.
+        dataset_name (str): to name the checkpoint .pth file, e.g. checkpoint_resnet50_cifar10.pth
+        result (dict[str, list]): the loss and accuracy up until the current epoch.
+        folder_path (_type_, optional): defaults to default_checkpoint_dir.
     """
     checkpoint = {
         'epoch': epoch,
@@ -116,10 +148,17 @@ def load_checkpoint(model_type: str,
                     model: nn.Module, 
                     optimizer: torch.optim.Optimizer,
                     folder_path = default_checkpoint_dir):
-    """
-    Function to load a model checkpoint 
-    
-    Return epoch, result
+    """ Load a model checkpoint, including epoch, optimizer, model state dict and result.
+
+    Args:
+        model_type (str): model architecture name (resnet50, resnet152, efficientnet_b32, ...).
+        model (nn.Module): model
+        optimizer (torch.optim.Optimizer): optimizer
+        dataset_name (str): to name the checkpoint .pth file, e.g. checkpoint_resnet50_cifar10.pth
+        folder_path (_type_, optional): defaults to default_checkpoint_dir.
+
+    Returns:
+        tuple(int, dict): continue epoch (int) and result (dict)
     """
     checkpoint = torch.load(f"{folder_path}/checkpoint_{model_type}.pth")
     model.load_state_dict(checkpoint['model_state_dict'])

@@ -20,6 +20,13 @@ warnings.filterwarnings("ignore", category=UserWarning)
 default_checkpoint_dir = "./checkpoints"
 
 def get_available_modeltypes() -> list[str]:
+    """ Get the available model types from the available_models.txt file
+    
+    User can modify the available_models.txt file to add more models
+
+    Returns:
+        list[str]: list of available model types
+    """
     available_models = []
     with open("available_models.txt", "r") as f:
         for line in f.readlines():
@@ -33,8 +40,17 @@ def load_model(
                num_classes: int,
                device: torch.device,
                path = "") -> nn.Module:
-    """
-    Function to load a model from a checkpoint
+    """ Load a model from torchvision.models or given path.
+
+    Args:
+        model_type (str): model architecture name (resnet50, resnet152, efficientnet_b32, ...).
+        in_channels (int): input channels from dataset.
+        num_classes (int): total of dataset classes, map with out_features in the last layer.
+        device (torch.device): device to run the model.
+        path (str, optional): pretrained model path. Defaults to "".
+
+    Returns:
+        nn.Module: model with modified first and last layer.
     """
         
     # If user input model path and is resume, load the state dict 
@@ -52,8 +68,15 @@ def load_model(
 def modify_layers(model: nn.Module, 
                   in_channels: int,
                   num_classes: int) -> nn.Module:
-    """
-    Function to modify the last layer of a model
+    """ Modify the first and the last layer of the model.
+
+    Args:
+        model (nn.Module): model to modify.
+        in_channels (int): input channels from dataset.
+        num_classes (int): number of classes from dataset.
+
+    Returns:
+        nn.Module: model with modified first and last layer.
     """
     last_layer = None
     first_layer = None
@@ -95,8 +118,17 @@ def save_checkpoint(model: nn.Module,
                     dataset_name: str,
                     result: dict[str, list],
                     folder_path = default_checkpoint_dir) -> None:
-    """
-    Function to save a model checkpoint
+    """ Save a model checkpoint, including epoch, optimizer, model state dict and result.
+
+    Args:
+        model (nn.Module):  model
+        model_type (str):  model architecture name (resnet50, resnet152, efficientnet_b32, ...).
+        optimizer (torch.optim.Optimizer): optimizer
+        epoch (int): continue from this epoch.
+        num_epochs (int): total epochs.
+        dataset_name (str): to name the checkpoint .pth file, e.g. checkpoint_resnet50_cifar10.pth
+        result (dict[str, list]): the loss and accuracy up until the current epoch.
+        folder_path (_type_, optional): defaults to default_checkpoint_dir.
     """
     checkpoint = {
         'epoch': epoch,
@@ -119,10 +151,17 @@ def load_checkpoint(model_type: str,
                     optimizer: torch.optim.Optimizer,
                     dataset_name:str,
                     folder_path = default_checkpoint_dir):
-    """
-    Function to load a model checkpoint 
-    
-    Return epoch, result
+    """ Load a model checkpoint, including epoch, optimizer, model state dict and result.
+
+    Args:
+        model_type (str): model architecture name (resnet50, resnet152, efficientnet_b32, ...).
+        model (nn.Module): model
+        optimizer (torch.optim.Optimizer): optimizer
+        dataset_name (str): to name the checkpoint .pth file, e.g. checkpoint_resnet50_cifar10.pth
+        folder_path (_type_, optional): defaults to default_checkpoint_dir.
+
+    Returns:
+        tuple(int, dict): continue epoch (int) and result (dict)
     """
     checkpoint = torch.load(f"{folder_path}/checkpoint_{model_type}_{dataset_name}.pth")
     log_message(f"Checkpoint found! Resume training {model_type} from epoch {checkpoint['epoch'] + 1}...", is_print=True)
@@ -147,6 +186,17 @@ def count_folders(path: str) -> int:
     return count
 
 def split_folders(path: str, train_percentage: float = 0.8) -> None:
+    """ Split a folder consists multi classes (subfolders) 
+    into train and validation folder with a ratio of train_percentage.
+    
+    The input folder structure should be:
+        path/class1/xxx.png
+            ...
+        path/class2/xxx.png
+    Args:
+        path (str): path to folder
+        train_percentage (float, optional): train/split ratio. Defaults to 0.8.
+    """
     target_dir = "./data"
     
     train_folder = os.path.join(target_dir, "train")
@@ -181,7 +231,9 @@ def split_folders(path: str, train_percentage: float = 0.8) -> None:
 
 def check_dataset_path(path: str) -> bool:
     """
-    Function to check if a dataset path exists, and if not, create it
+    Function to check if a dataset path exists, and if not, create it.
+    
+    This function calls split_folders() to split the dataset into train and validation folders.
     """
     if os.path.exists(path):
         if not os.path.exists(os.path.join(path, 'train')) or not os.path.exists(os.path.join(path, 'valid')):
@@ -196,6 +248,8 @@ def check_dataset_path(path: str) -> bool:
     return False
 
 def check_pretrained_model_path(path: str) -> bool:
+    """ Check if a pretrained model exists at the given path.
+    """
     if os.path.exists(path):
         if path.endswith('.pth') or path.endswith('.pt'):
             # log_message(f"Model found! {path}")
@@ -204,6 +258,7 @@ def check_pretrained_model_path(path: str) -> bool:
     return False
 
 def log_message(message: str, log_file: str = "log.txt", is_print = False):
+    """ Log a message to a log file and print it to console if is_print is True."""
     with open(log_file, "a") as f:
         f.write(f"{message}\n")
     if is_print:
@@ -223,6 +278,13 @@ def check_and_create_dir(path: str):
         os.makedirs(path, exist_ok=True)
 
 def plot_loss_accuracy_curve(results: dict, output_dir: str, save_name: str):
+    """ Plot loss and accuracy curve from a results dictionary.
+
+    Args:
+        results (dict): train and test results.
+        output_dir (str): output directory to save the plot. Defaults to './Plots'.
+        save_name (str): save name.
+    """
     check_and_create_dir(output_dir)
 
     epochs = range(1, len(results['Train loss']) + 1)

@@ -22,6 +22,17 @@ def count_folders(path: str) -> int:
     return count
 
 def split_folders(path: str, train_percentage: float = 0.8) -> None:
+    """ Split a folder consists multi classes (subfolders) 
+    into train and validation folder with a ratio of train_percentage.
+    
+    The input folder structure should be:
+        path/class1/xxx.png
+            ...
+        path/class2/xxx.png
+    Args:
+        path (str): path to folder
+        train_percentage (float, optional): train/split ratio. Defaults to 0.8.
+    """
     target_dir = "./data"
     
     train_folder = os.path.join(target_dir, "train")
@@ -56,7 +67,9 @@ def split_folders(path: str, train_percentage: float = 0.8) -> None:
 
 def check_dataset_path(path: str) -> bool:
     """
-    Function to check if a dataset path exists, and if not, create it
+    Function to check if a dataset path exists, and if not, create it.
+    
+    This function calls split_folders() to split the dataset into train and validation folders.
     """
     if os.path.exists(path):
         if not os.path.exists(os.path.join(path, 'train')) or not os.path.exists(os.path.join(path, 'valid')):
@@ -71,6 +84,8 @@ def check_dataset_path(path: str) -> bool:
     return False
 
 def check_pretrained_model_path(path: str) -> bool:
+    """ Check if a pretrained model exists at the given path.
+    """
     if os.path.exists(path):
         if path.endswith('.pth') or path.endswith('.pt'):
             # log_message(f"Model found! {path}")

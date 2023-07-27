@@ -14,6 +14,20 @@ def train_step(model: nn.Module,
                optimizer: torch.optim.Optimizer,
                device: torch.device,
                epoch: int) -> tuple[float, float]:
+    """ Performs a single training step through the train loader.
+    i.e. forward pass, backward pass and parameter update.
+
+    Args:
+        model (nn.Module): _model
+        train_loader (DataLoader): _train loader_
+        loss_fn (nn.Module): loss function, e.g. nn.CrossEntropyLoss()
+        optimizer (torch.optim.Optimizer): optimizer, e.g. torch.optim.SGD()
+        device (torch.device): using device
+        epoch (int): current epoch
+
+    Returns:
+        tuple[float, float]: average train loss and train accuracy
+    """
     model.train()
     
     train_loss, train_accuracy = 0., 0.
@@ -41,8 +55,21 @@ def eval_step(model: nn.Module,
               test_loader: DataLoader,
               loss_fn: nn.Module,
               device: torch.device,
-              epoch: int) -> tuple[float, float]:   
+              epoch: int) -> tuple[float, float]:  
+     
+    """ Performs a single testing step through the test loader.
+    i.e. forward pass and compute loss and accuracy.
 
+    Args:
+        model (nn.Module): _model
+        test_loader (DataLoader): _test loader_
+        loss_fn (nn.Module): loss function, e.g. nn.CrossEntropyLoss()
+        device (torch.device): using device
+        epoch (int): current epoch
+
+    Returns:
+        tuple[float, float]: average test loss and test accuracy
+    """
     model.eval()
     
     test_loss, test_accuracy = 0., 0.
@@ -72,7 +99,11 @@ def train_model(model: nn.Module,
           device: torch.device,
           results,
           dataset_name:str):
-    
+    """ Trains the model for the given number of epochs.
+
+    Returns:
+        dict[str, list]: results of the training and testing process
+    """
     model.to(device)
     
     for epoch in range(start_epoch, epochs):
